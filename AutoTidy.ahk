@@ -47,7 +47,13 @@ Tidy(FilePath)
 	}
 	)
 	
-	return new ModelCode(Context)
+	; Set the working dir for #Include path resolution
+	OldWorkingDir := A_WorkingDir
+	SetWorkingDir, % FilePath
+	Code := new ModelCode(Context)
+	SetWorkingDir, % OldWorkingDir
+	
+	return Code
 }
 
 #Include ModelLine.ahk

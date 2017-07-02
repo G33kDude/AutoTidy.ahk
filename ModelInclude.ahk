@@ -53,10 +53,10 @@ class ModelInclude extends Model
 				FileObj := FileOpen(IncludeFile, "r")
 				if !FileObj
 				{
-					if iOption
+					if IgnoreErrors
 						return False
 					else
-						throw Exception("Couldn't open #Include file")
+						throw Exception("Couldn't open file", "#Include", IncludeFile)
 				}
 				
 				this.Context.Includes.Push(IncludeFile)

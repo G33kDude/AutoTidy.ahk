@@ -56,21 +56,9 @@ class ModelCode extends Model
 		this.SingleLine := this.Context.SingleLine
 		this.Context.SingleLine := False
 		
-		; Set the WorkingDir. Important for includes.
-		; TODO: move into init function?
-		if this.Context.IsFirstScript
-		{
-			OldWorkingDir := A_WorkingDir
-			SetWorkingDir, % this.Context.ScriptDir
-		}
-		
 		while this.GetNextLine()
 			if this.ProcessLine()
 				break
-		
-		; Restore old WorkingDir if necessary
-		if OldWorkingDir
-			SetWorkingDir, %OldWorkingDir%
 	}
 	
 	; Returns end of block flag
