@@ -13,7 +13,7 @@ class ModelLine extends Model
 		Get
 		{
 			Out := this.Line
-			if this.HasComment
+			if (this.HasComment && !this.Context.Minify)
 				Out .= (this.Line == "" ? "" : " ") "; " Trim(this.Comment, " `t`r`n")
 			if this.HasContinuation
 				Out .= "`n" this.Continuation

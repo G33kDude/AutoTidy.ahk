@@ -41,12 +41,12 @@ class ModelCode extends Model
 			Loop, % this.Length()
 			{
 				TmpVal := this[A_Index].Value
-				if (Trim(TmpVal, " `t`r`n")) ; Don't show whitespace for blank lines
+				if (Trim(TmpVal, " `t`r`n") && !this.Context.Minify) ; Don't show whitespace for blank lines
 					Out .= Repeat("`t", this.Context.IndentLevel)
 				Out .= TmpVal
 			}
 			if this.Context.UseBraces
-				Out .= Repeat("`t", this.Context.IndentLevel-1) "}"
+				Out .= (this.Context.Minify ? "" : Repeat("`t", this.Context.IndentLevel-1)) "}"
 			return Out
 		}
 	}
@@ -79,7 +79,8 @@ class ModelCode extends Model
 		; Blank line
 		if (this.Line.Line == "")
 		{
-			this.Push(this.Line)
+			if !this.Context.Minify
+				this.Push(this.Line)
 			return
 		}
 		
@@ -89,7 +90,10 @@ class ModelCode extends Model
 			this.Context.Code.Pos := this.LinePtr
 			this.Context.Code.Read(InStr(this.Line.Raw, "/*")+1)
 			
-			this.Push(new ModelCmtBlock(this.Context.Clone()))
+			if (this.Context.Minify)
+				new ModelCmtBlock(this.Context.Clone()) ; Read it but don't save it
+			else
+				this.Push(new ModelCmtBlock(this.Context.Clone()))
 			return
 		}
 		
@@ -106,7 +110,7 @@ class ModelCode extends Model
 				Context.IndentLevel++
 				Context.UseBraces := True
 				this.Push(new ModelCode(Context))
-				return
+				return this.SingleLine
 			}
 			
 			this.Push(this.Line)
@@ -125,7 +129,7 @@ class ModelCode extends Model
 					Context.IndentLevel++
 					Context.UseBraces := True
 					this.Push(new ModelCode(Context))
-					return
+					return this.SingleLine
 				}
 				
 				if (this.Line.Line ~= this.REContinuedExpression)
@@ -141,7 +145,7 @@ class ModelCode extends Model
 			Context.IndentLevel++
 			Context.UseBraces := this.Context.BracesForSingleLine
 			this.Push(new ModelCode(Context))
-			return
+			return this.SingleLine
 		}
 		
 		; Other blocks
@@ -155,7 +159,7 @@ class ModelCode extends Model
 			Context.IndentLevel++
 			Context.UseBraces := True
 			this.Push(new ModelCode(Context))
-			return
+			return this.SingleLine
 		}
 		
 		; End of block
@@ -175,19 +179,13 @@ class ModelCode extends Model
 			; Will be false if *i and doesn't exist
 			if (Include := new ModelInclude(this.Context.Clone()))
 				this.Push(Include)
-			return
+			return this.SingleLine
 		}
-		
 		
 		; Some other kind of line
 		this.Push(this.Line)
 		
-		
-		if this.SingleLine
-		{
-			;Array_Gui(this.Line)
-			return True
-		}
+		return this.SingleLine
 	}
 	
 	GetNextLine()

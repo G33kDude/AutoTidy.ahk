@@ -42,7 +42,8 @@ Tidy(FilePath)
 		"ScriptDir": ScriptDir,
 		"ScriptPath": FilePath,
 		"IsFirstScript": True,
-		"BracesForSingleLine": True
+		"BracesForSingleLine": True,
+		"Minify": True
 	}
 	)
 	
