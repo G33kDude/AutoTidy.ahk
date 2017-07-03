@@ -87,6 +87,32 @@ class ModelCode extends Model
 			return
 		}
 		
+		; Else block (doesn't count against single line)
+		if (RegExMatch(this.Line.Line, "i)^else\b(\s*{)?", Match))
+		{
+			this.Context.Code.Pos := this.LinePtr
+			
+			Context := this.Context.Clone()
+			Context.IndentLevel++
+			
+			if Match1 ; Has brace
+			{
+				Context.UseBraces := True
+				Context.Code.Read(InStr(this.Line.Raw, "{"))
+			}
+			else
+			{
+				Context.SingleLine := True
+				Context.UseBraces := Context.BracesForSingleLine
+				Context.Code.Read(InStr(this.Line.Raw, "else")+3)
+			}
+			
+			; TODO: Use ModelElse
+			this.Push({"Value": "else`n"})
+			this.Push(new ModelCode(Context))
+			return this.SingleLine
+		}
+		
 		; Known block (Takes shortcuts with continued expressions)
 		if (this.Line.Line ~= this.REIndentable)
 		{
@@ -100,7 +126,7 @@ class ModelCode extends Model
 				Context.IndentLevel++
 				Context.UseBraces := True
 				this.Push(new ModelCode(Context))
-				return this.SingleLine
+				return this.PeekLine().Line ~= "^else\b" ? "" : this.SingleLine
 			}
 			
 			this.Push(this.Line)
@@ -119,7 +145,7 @@ class ModelCode extends Model
 					Context.IndentLevel++
 					Context.UseBraces := True
 					this.Push(new ModelCode(Context))
-					return this.SingleLine
+					return this.PeekLine().Line ~= "^else\b" ? "" : this.SingleLine
 				}
 				
 				if (this.Line.Line ~= this.REContinuedExpression)
@@ -135,7 +161,8 @@ class ModelCode extends Model
 			Context.IndentLevel++
 			Context.UseBraces := this.Context.BracesForSingleLine
 			this.Push(new ModelCode(Context))
-			return this.SingleLine
+			return this.PeekLine().Line ~= "^else\b" ? "" : this.SingleLine
+		}
 		
 		; Function definition
 		if (this.Line.Line ~= "^" this.RECustomName "\(.*\)(\s*{)?$")
@@ -250,7 +277,7 @@ class ModelCode extends Model
 	PeekLine()
 	{
 		LinePtr := this.Context.Code.Pos
-		Line := new ModelLine(this.Context.Code)
+		Line := new ModelLine(this.Context.Clone())
 		this.Context.Code.Pos := LinePtr
 		return Line
 	}
