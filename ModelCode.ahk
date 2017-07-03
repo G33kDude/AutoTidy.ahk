@@ -40,6 +40,8 @@ class ModelCode extends Model
 				Out .= "{"
 			Loop, % this.Length()
 			{
+				if (this[A_Index].OnOwnLine && SubStr(Out, 1-1) != "`n")
+					Out .= "`n"
 				TmpVal := this[A_Index].Value
 				if (Trim(TmpVal, " `t`r`n") && !this.Context.Minify) ; Don't show whitespace for blank lines
 					Out .= Repeat("`t", this.Context.IndentLevel)
@@ -218,6 +220,14 @@ class ModelCode extends Model
 			if (Include := new ModelInclude(this.Context.Clone()))
 				this.Push(Include)
 			return this.SingleLine
+		}
+		
+		; Label (Doesn't count against single line)
+		if (this.Line.Line ~= "^" this.RECustomName ":$")
+		{
+			this.Context.Code.Pos := this.LinePtr
+			this.Push(new ModelLabel(this.Context.Clone()))
+			return
 		}
 		
 		; Some other kind of line

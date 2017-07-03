@@ -62,4 +62,4 @@ Tidy(FilePath)
 #Include ModelCmtBlock.ahk
 #Include ModelInclude.ahk
 #Include Model.ahk
-;#Include ModelIndentable.ahk
+#Include ModelLabel.ahk
