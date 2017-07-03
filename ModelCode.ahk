@@ -134,6 +134,56 @@ class ModelCode extends Model
 			Context.UseBraces := this.Context.BracesForSingleLine
 			this.Push(new ModelCode(Context))
 			return this.SingleLine
+		
+		; Function definition
+		if (this.Line.Line ~= "^" this.RECustomName "\(.*\)(\s*{)?$")
+		{
+			; OTB
+			if this.Line.EndsWith("{")
+			{
+				; TODO: Better idea
+				this.Line.Line := Trim(SubStr(this.Line.Line, 1, -1), " `t`r`n")
+				this.Push(this.Line)
+				
+				Context := this.Context.Clone()
+				Context.IndentLevel++
+				Context.UseBraces := True
+				this.Push(new ModelCode(Context))
+				return this.SingleLine
+			}
+			
+			; Save where we are
+			LinePtr := this.LinePtr
+			Signature := this.Line
+			
+			; Next line brace
+			loop
+			{
+				this.GetNextLine()
+				
+				if this.Line.StartsWith("{")
+				{
+					this.Push(Signature)
+					
+					this.Context.Code.Pos := this.LinePtr
+					this.Context.Code.Read(InStr(this.Line.Raw, "{"))
+					
+					Context := this.Context.Clone()
+					Context.IndentLevel++
+					Context.UseBraces := True
+					this.Push(new ModelCode(Context))
+					return this.SingleLine
+				}
+				
+				if (this.Line.Line ~= this.REContinuedExpression)
+					continue
+				
+				break
+			}
+			
+			; Just a function call, carry on
+			this.Context.Code.Pos := LinePtr
+			this.GetNextLine()
 		}
 		
 		; Other blocks
