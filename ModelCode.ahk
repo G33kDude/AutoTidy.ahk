@@ -102,26 +102,25 @@ class ModelCode extends Model
 		; Known block (Takes shortcuts with continued expressions)
 		if (this.Line.Line ~= this.REIndentable)
 		{
-			; OTB
-			if this.Line.EndsWith("{") {
-				; TODO: Better idea
-				this.Line.Line := Trim(SubStr(this.Line.Line, 1, -1), " `t`r`n")
-				this.Push(this.Line)
-				
-				Context := this.Context.Clone()
-				Context.IndentLevel++
-				Context.UseBraces := True
-				this.Push(new ModelCode(Context))
-				return this.PeekLine().Line ~= "^else\b" ? "" : this.SingleLine
-			}
-			
-			this.Push(this.Line)
-			
-			; Next line brace
 			loop
 			{
+				; OTB
+				if this.Line.EndsWith("{") {
+				; TODO: Better idea
+					this.Line.Line := Trim(SubStr(this.Line.Line, 1, -1), " `t`r`n")
+					this.Push(this.Line)
+					
+					Context := this.Context.Clone()
+					Context.IndentLevel++
+					Context.UseBraces := True
+					this.Push(new ModelCode(Context))
+					return this.PeekLine().Line ~= "^else\b" ? "" : this.SingleLine
+				}
+				
+				this.Push(this.Line)
 				this.GetNextLine()
 				
+				; Next line brace
 				if this.Line.StartsWith("{")
 				{
 					this.Context.Code.Pos := this.LinePtr
