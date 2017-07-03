@@ -1,29 +1,24 @@
+#NoEnv
+SetBatchLines, -1
 
-x =
-(
-a
-b
-c
-)xyz
+FileSelectFile, FilePath
+if !FilePath
+	ExitApp
 
-/*
+MsgBox, 4,, Minify? (Click "No" to un-minify)
+IfMsgBox, Yes
+	Minify := True
 
-y =
-(
-a
-b
-c
-)
+Script := Tidy(FilePath, Minify)
 
-*/
+MsgBox, 4,, Done! Save to clipboard?
+IfMsgBox, Yes
+	Clipboard := Script.Value
 
-;ModelInclude := ModelLine
-
-Token := Tidy(A_LineFile)
-MsgBox, % clipboard := Token.Value
 ExitApp
+return
 
-Tidy(FilePath)
+Tidy(FilePath, Minify)
 {
 	FilePath := Util_GetFullPath(FilePath)
 	SplitPath, FilePath, ScriptName, ScriptDir	
@@ -42,8 +37,8 @@ Tidy(FilePath)
 		"ScriptDir": ScriptDir,
 		"ScriptPath": FilePath,
 		"IsFirstScript": True,
-		"BracesForSingleLine": True,
-		"Minify": True
+		"BracesForSingleLine": False,
+		"Minify": Minify
 	}
 	)
 	
