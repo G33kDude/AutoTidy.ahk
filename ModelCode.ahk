@@ -89,28 +89,10 @@ class ModelCode extends Model
 		}
 		
 		; Else block (doesn't count against single line)
-		if (RegExMatch(this.Line.Line, "i)^else\b(\s*{)?", Match))
+		if (this.Line.Line ~= "i)^else\b")
 		{
 			this.Context.Code.Pos := this.LinePtr
-			
-			Context := this.Context.Clone()
-			Context.IndentLevel++
-			
-			if Match1 ; Has brace
-			{
-				Context.UseBraces := True
-				Context.Code.Read(InStr(this.Line.Raw, "{"))
-			}
-			else
-			{
-				Context.SingleLine := True
-				Context.UseBraces := Context.BracesForSingleLine
-				Context.Code.Read(InStr(this.Line.Raw, "else")+3)
-			}
-			
-			; TODO: Use ModelElse
-			this.Push({"Value": "else`n"})
-			this.Push(new ModelCode(Context))
+			this.Push(new ModelElse(this.Context.Clone()))
 			return this.SingleLine
 		}
 		
