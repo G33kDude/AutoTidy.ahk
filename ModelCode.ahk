@@ -1,7 +1,10 @@
 class ModelCode extends Model
 {
 	static REContinuedExpression := "i)^\s*(&&|OR|AND|\.|\,|\|\||:|\?)"
-	static RECustomName := "[a-zA-Z_][a-zA-Z0-9_]*" ; Not really true
+	
+	; https://autohotkey.com/board/topic/98444-test-if-string-has-any-illegal-characters-for-a-variable-name/?p=619506
+	static RECustomName := "[\w#@$\x80-\x{10ffff}]{1,253}"
+	
 	static REIndentable := "
 	( LTrim Join
 	i)^(
