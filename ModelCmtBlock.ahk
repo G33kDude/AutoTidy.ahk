@@ -1,9 +1,12 @@
 class ModelCmtBlock extends Model
 {
+	static OnOwnLine := True
+	
 	Value[]
 	{
 		Get
 		{
+			; TODO: Use indent for close brace
 			return "/*" this.Comment "*/"
 		}
 	}

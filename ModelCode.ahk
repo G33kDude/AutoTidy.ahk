@@ -4,13 +4,13 @@ class ModelCode extends Model
 	static RECustomName := "[a-zA-Z_][a-zA-Z0-9_]*" ; Not really true
 	static REIndentable := "
 	( LTrim Join
-	i)^\b(
+	i)^(
 		Catch|else|for|Finally|if|IfEqual|IfExist|
 		IfGreater|IfGreaterOrEqual|IfInString|
 		IfLess|IfLessOrEqual|IfMsgBox|IfNotEqual|
 		IfNotExist|IfNotInString|IfWinActive|IfWinExist|
 		IfWinNotActive|IfWinNotExist|Loop|Try|while|
-		Get|Set
+		Get|Set|Class
 	`)\b
 	)"
 	
@@ -66,15 +66,16 @@ class ModelCode extends Model
 	; Returns end of block flag
 	ProcessLine()
 	{
-		; Blank line
+		; Blank line (doesn't count against single line)
 		if (this.Line.Line == "")
 		{
+			; TODO: modify Value to skip these
 			if !this.Context.Minify
 				this.Push(this.Line)
 			return
 		}
 		
-		; Is a comment block
+		; Is a comment block (doesn't count against single line)
 		if this.Line.StartsWith("/*")
 		{
 			this.Context.Code.Pos := this.LinePtr
