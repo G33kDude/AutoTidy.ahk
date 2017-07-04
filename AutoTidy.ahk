@@ -51,11 +51,11 @@ Tidy(FilePath, Minify)
 	return Code
 }
 
-#Include ModelLine.ahk
-#Include ModelCode.ahk
-#Include Util.ahk
-#Include ModelCmtBlock.ahk
-#Include ModelInclude.ahk
-#Include Model.ahk
-#Include ModelLabel.ahk
-#Include ModelElse.ahk
+#Include Lib\Model.ahk
+#Include Lib\ModelCmtBlock.ahk
+#Include Lib\ModelCode.ahk
+#Include Lib\ModelElse.ahk
+#Include Lib\ModelInclude.ahk
+#Include Lib\ModelLabel.ahk
+#Include Lib\ModelLine.ahk
+#Include Lib\Util.ahk
