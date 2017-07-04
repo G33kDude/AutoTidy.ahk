@@ -44,7 +44,7 @@ Tidy(FilePath, Minify)
 	
 	; Set the working dir for #Include path resolution
 	OldWorkingDir := A_WorkingDir
-	SetWorkingDir, % FilePath
+	SetWorkingDir, % ScriptDir
 	Code := new ModelCode(Context)
 	SetWorkingDir, % OldWorkingDir
 	
